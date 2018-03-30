@@ -1,12 +1,10 @@
-# mubot
-
 ```
          (__)
          (oo)
   /-------\/
  / |     ||
 +  ||----||
-   ~~    ~~
+   ~~    ~~  mubot
 ```
 
 Bot that queues tweets using **[Qbot](https://github.com/alvivar/qbot)** with **SoundCloud** songs from **4chan** **mu** boards!
