@@ -1,8 +1,10 @@
 
         TO DO
 
-    Scrap soundcloud for links, twitter, bandcamp, etc
-    Include profile links and take the latest song
+    Scrap soundcloud for social accounts
+    Include bandcamp links
+    Include soundcloud profile links and take the latest song
+    Include youtube links?
 
     2018/03/29 07:18 pm
     x Create a qbot file with a cool schedule
