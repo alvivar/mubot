@@ -1,5 +1,14 @@
 # mubot
 
+```
+         (__)
+         (oo)
+  /-------\/
+ / |     ||
++  ||----||
+   ~~    ~~
+```
+
 Bot that queues tweets using **[Qbot](https://github.com/alvivar/qbot)** with **SoundCloud** songs from **4chan** **mu** boards!
 
 **4chan** is a weird place, but I like a lot the music threads where everyone share their creations and feedback. This bot aims to collect those songs and maybe help in that regard.
