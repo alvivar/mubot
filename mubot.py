@@ -167,6 +167,7 @@ if __name__ == '__main__':
    ~~    ~~  mubot v0.1 """)
 
     DELTA = time.time()
+    DELTASTR = round(DELTA)
 
     # Files
 
@@ -217,17 +218,17 @@ if __name__ == '__main__':
     soundcloud_replies = get_all_soundcloud_replies(
         'http://boards.4chan.org/mu/catalog')
 
-    with open(os.path.join(DATAPATH, 'soundcloud_replies.json'), 'w') as f:
+    with open(os.path.join(DATAPATH, f'{DELTASTR}.replies.json'), 'w') as f:
         json.dump(soundcloud_replies, f)
 
     # SoundClouds
 
     soundclouds, threads = get_all_soundclouds(soundcloud_replies)
 
-    with open(os.path.join(DATAPATH, 'soundclouds.json'), 'w') as f:
+    with open(os.path.join(DATAPATH, f'{DELTASTR}.songs.json'), 'w') as f:
         json.dump(soundclouds, f)
 
-    with open(os.path.join(DATAPATH, 'soundcloud_threads.json'), 'w') as f:
+    with open(os.path.join(DATAPATH, f'{DELTASTR}.threads.json'), 'w') as f:
         json.dump(threads, f)
 
     # Qbot filling
