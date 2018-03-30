@@ -6,7 +6,12 @@
     Include soundcloud profile links and take the latest song
     Include youtube links?
 
+    Tumblr account publishing
+    Soundcloud playlist somehow?
+
     2018/03/29 07:18 pm
+    x Twitter tokens
+    x Twitter account
     x Create a qbot file with a cool schedule
     x Validate songs ids to avoid repetition
     x Create a cycle to scrap when the script runs
