@@ -237,6 +237,7 @@ if __name__ == '__main__':
         if i not in CONFIG['already_queued']:
             CONFIG['already_queued'].append(i)
             QBOT['messages'].append({'text': i})
+            chosen.append(i)
 
     # Save
 
