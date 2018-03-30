@@ -158,6 +158,16 @@ def get_all_soundclouds(soundcloud_replies):
 
 if __name__ == '__main__':
 
+    print(r"""
+         (__)
+         (oo)
+  /-------\/
+ / |     ||
++  ||----||
+   ~~    ~~  mubot v0.1 """)
+
+    DELTA = time.time()
+
     # Files
 
     CONFIG_JSON = os.path.join(HOME, "config.json")
@@ -228,10 +238,15 @@ if __name__ == '__main__':
             CONFIG['already_queued'].append(i)
             QBOT['messages'].append({'text': i})
 
-    # Saving
+    # Save
 
     with open(os.path.join(HOME, CONFIG_JSON), 'w') as f:
         json.dump(CONFIG, f)
 
     with open(os.path.join(HOME, QBOT_JSON), 'w') as f:
         json.dump(QBOT, f)
+
+    # Info
+
+    print(f'\n{len(chosen)} SoundCloud links found')
+    print(f'\nDone ({round(time.time() - DELTA)}s)')
