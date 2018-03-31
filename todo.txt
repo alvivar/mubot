@@ -1,13 +1,15 @@
 
         TO DO
 
-    Scrap soundcloud for social accounts
-    Include bandcamp links
-    Include soundcloud profile links and take the latest song
-    Include youtube links?
+    Scrap soundcloud/bandcamp for social accounts
+    Scrap latest song from soundcloud profile
 
     Tumblr account publishing
+    Include youtube links?
     Soundcloud playlist somehow?
+
+    2018/03/31 01:41 pm
+    x Include bandcamp links
 
     2018/03/29 07:18 pm
     x Twitter tokens

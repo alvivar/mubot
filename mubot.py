@@ -4,6 +4,7 @@ import os
 import re
 import sys
 import time
+from random import shuffle
 
 import requests
 from bs4 import BeautifulSoup
@@ -56,6 +57,7 @@ def get_threads_from_catalog(html):
         special = True if special else False
 
         soundcloud = 'soundcloud' in teaser.lower()
+        bandcamp = 'bandcamp' in teaser.lower()
 
         stats = i.find('div', {'class': 'meta'}).find_all('b')
         try:
@@ -72,6 +74,7 @@ def get_threads_from_catalog(html):
             'teaser': teaser,
             'special': special,
             'soundcloud': soundcloud,
+            'bandcamp': bandcamp,
             'replies_count': int(replies_count),
             'images_count': int(images_count)
         })
@@ -104,56 +107,57 @@ def get_replies_from_thread(html, url):
             content = content.replace(' youtube.com', 'youtube.com')
             content = ' '.join(content.split())
 
-            soundcloud = re.findall(r'(https?://\S+)', content)
-            soundcloud = [i for i in soundcloud if 'soundcloud' in i.lower()]
+            songs = re.findall(r'(https?://\S+)', content)
+            soundcloud = [i for i in songs if 'soundcloud' in i.lower()]
+            bandcamp = [i for i in songs if 'bandcamp' in i.lower()]
         else:
             soundcloud = []
+            bandcamp = []
 
-        if soundcloud:
-            data.append({
-                'thread': url,
-                'author': author,
-                'image_url': f'https:{image}' if image else False,
-                'content': content,
-                'soundcloud': list(set(soundcloud))
-            })
+        data.append({
+            'thread': url,
+            'author': author,
+            'image_url': f'https:{image}' if image else False,
+            'content': content,
+            'soundcloud': list(set(soundcloud)),
+            'bandcamp': list(set(bandcamp))
+        })
 
     return data
 
 
-def get_all_soundcloud_replies(catalog_url):
+def get_songs_replies(catalog_url):
 
     catalog_html = get_html(catalog_url)
     threads = get_threads_from_catalog(catalog_html)
 
-    sc_threads = [i for i in threads if i['soundcloud'] and not i['special']]
-    sc_replies = [
+    songs_threads = [i for i in threads if i['soundcloud'] or i['bandcamp']]
+    songs_replies = [
         get_replies_from_thread(get_html(i['url']), i['url'])
-        for i in sc_threads
+        for i in songs_threads
     ]
 
-    return [i for sublist in sc_replies for i in sublist]
+    return [i for sublist in songs_replies for i in sublist]
 
 
-def get_all_soundclouds(soundcloud_replies):
+def get_songs_urls(songs_replies):
 
-    soundclouds = []
-    for i in soundcloud_replies:
-        soundclouds.extend(i['soundcloud'])
+    songs = []
+    for i in songs_replies:
+        songs.extend(i['soundcloud'])
+        songs.extend(i['bandcamp'])
 
-    soundclouds = list(set(soundclouds))
-    soundclouds = [
-        i.replace('m.', '').replace('www.', '').split('?')[0]
-        for i in soundclouds
-        if i.count('/') > 3  # Only songs urls, no profiles for the moment
+    songs = list(set(songs))
+    songs = [
+        i.replace('m.', '').replace('www.', '').split('?')[0] for i in songs
     ]
 
     threads = []
-    for i in soundcloud_replies:
+    for i in songs_replies:
         threads.append(i['thread'])
     threads = list(set(threads))
 
-    return soundclouds, threads
+    return songs, threads
 
 
 if __name__ == '__main__':
@@ -167,7 +171,7 @@ if __name__ == '__main__':
    ~~    ~~  mubot v0.1 """)
 
     DELTA = time.time()
-    DELTASTR = round(DELTA)
+    TIMESTR = round(DELTA)
 
     # Files
 
@@ -215,30 +219,30 @@ if __name__ == '__main__':
 
     # Replies
 
-    soundcloud_replies = get_all_soundcloud_replies(
-        'http://boards.4chan.org/mu/catalog')
+    songs_replies = get_songs_replies('http://boards.4chan.org/mu/catalog')
 
-    with open(os.path.join(DATAPATH, f'{DELTASTR}.replies.json'), 'w') as f:
-        json.dump(soundcloud_replies, f)
+    with open(os.path.join(DATAPATH, f'{TIMESTR}.replies.json'), 'w') as f:
+        json.dump(songs_replies, f)
 
-    # SoundClouds
+    # Songs (soundcloud + bandcamp)
 
-    soundclouds, threads = get_all_soundclouds(soundcloud_replies)
+    songs, threads = get_songs_urls(songs_replies)
 
-    with open(os.path.join(DATAPATH, f'{DELTASTR}.songs.json'), 'w') as f:
-        json.dump(soundclouds, f)
+    with open(os.path.join(DATAPATH, f'{TIMESTR}.songs.json'), 'w') as f:
+        json.dump(songs, f)
 
-    with open(os.path.join(DATAPATH, f'{DELTASTR}.threads.json'), 'w') as f:
+    with open(os.path.join(DATAPATH, f'{TIMESTR}.threads.json'), 'w') as f:
         json.dump(threads, f)
 
     # Qbot filling
 
-    chosen = []
-    for i in soundclouds:
+    found = []
+    shuffle(songs)
+    for i in songs:
         if i not in CONFIG['already_queued']:
             CONFIG['already_queued'].append(i)
             QBOT['messages'].append({'text': i})
-            chosen.append(i)
+            found.append(i)
 
     # Save
 
@@ -250,5 +254,12 @@ if __name__ == '__main__':
 
     # Info
 
-    print(f'\n{len(chosen)} SoundCloud links found')
+    print()
+    print('\n'.join(threads))
+    print(f'{len(threads)} threads scanned')
+
+    print()
+    print('\n'.join(found))
+    print(f'{len(found)} songs urls found')
+
     print(f'\nDone ({round(time.time() - DELTA)}s)')
