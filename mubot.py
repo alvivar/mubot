@@ -13,6 +13,17 @@ import selenium.webdriver.support.ui as ui
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+COW = r"""
+         (__)
+         (oo)
+  /-------\/
+ / |     ||
++  ||----||
+   ~~    ~~  mubot v0.1 """
+
+DELTA = time.time()
+TIMESTR = round(DELTA)
+
 HOME = os.path.normpath(  # The script directory + cxfreeze compatibility
     os.path.dirname(
         sys.executable if getattr(sys, 'frozen', False) else __file__))
@@ -162,17 +173,6 @@ def get_songs_urls(songs_replies):
 
 if __name__ == '__main__':
 
-    print(r"""
-         (__)
-         (oo)
-  /-------\/
- / |     ||
-+  ||----||
-   ~~    ~~  mubot v0.1 """)
-
-    DELTA = time.time()
-    TIMESTR = round(DELTA)
-
     # Files
 
     CONFIG_JSON = os.path.join(HOME, "config.json")
@@ -217,49 +217,67 @@ if __name__ == '__main__':
         with open(QBOT_JSON, 'w') as f:
             json.dump(QBOT, f)
 
-    # Replies
+    REPEAT = True
+    while REPEAT:
 
-    songs_replies = get_songs_replies('http://boards.4chan.org/mu/catalog')
+        print(COW)
 
-    with open(os.path.join(DATAPATH, f'{TIMESTR}.replies.json'), 'w') as f:
-        json.dump(songs_replies, f)
+        # Replies
 
-    # Songs (soundcloud + bandcamp)
+        songs_replies = get_songs_replies('http://boards.4chan.org/mu/catalog')
 
-    songs, threads = get_songs_urls(songs_replies)
+        with open(os.path.join(DATAPATH, f'{TIMESTR}.replies.json'), 'w') as f:
+            json.dump(songs_replies, f)
 
-    with open(os.path.join(DATAPATH, f'{TIMESTR}.songs.json'), 'w') as f:
-        json.dump(songs, f)
+        # Songs (soundcloud + bandcamp)
 
-    with open(os.path.join(DATAPATH, f'{TIMESTR}.threads.json'), 'w') as f:
-        json.dump(threads, f)
+        songs, threads = get_songs_urls(songs_replies)
 
-    # Qbot filling
+        with open(os.path.join(DATAPATH, f'{TIMESTR}.songs.json'), 'w') as f:
+            json.dump(songs, f)
 
-    found = []
-    shuffle(songs)
-    for i in songs:
-        if i not in CONFIG['already_queued']:
-            CONFIG['already_queued'].append(i)
-            QBOT['messages'].append({'text': i})
-            found.append(i)
+        with open(os.path.join(DATAPATH, f'{TIMESTR}.threads.json'), 'w') as f:
+            json.dump(threads, f)
 
-    # Save
+        # Qbot filling
 
-    with open(os.path.join(HOME, CONFIG_JSON), 'w') as f:
-        json.dump(CONFIG, f)
+        found = []
+        shuffle(songs)
+        for i in songs:
+            if i not in CONFIG['already_queued']:
+                CONFIG['already_queued'].append(i)
+                QBOT['messages'].append({'text': i})
+                found.append(i)
 
-    with open(os.path.join(HOME, QBOT_JSON), 'w') as f:
-        json.dump(QBOT, f)
+        # Save
 
-    # Info
+        with open(os.path.join(HOME, CONFIG_JSON), 'w') as f:
+            json.dump(CONFIG, f)
 
-    print()
-    print('\n'.join(threads))
-    print(f'{len(threads)} threads scanned')
+        with open(os.path.join(HOME, QBOT_JSON), 'w') as f:
+            json.dump(QBOT, f)
 
-    print()
-    print('\n'.join(found))
-    print(f'{len(found)} songs urls found')
+        # Info
 
-    print(f'\nDone ({round(time.time() - DELTA)}s)')
+        print()
+        print('\n'.join(threads))
+        print(f'{len(threads)} threads scanned')
+
+        print()
+        print('\n'.join(found))
+        print(f'{len(found)} songs urls found')
+
+        print(f'\nDone ({round(time.time() - DELTA)}s)')
+
+        # REPEAT
+
+        print()
+        TIMER = 0
+        DELAY = 60 * 60
+        while REPEAT and TIMER < DELAY:
+            TIMER += 1
+            time.sleep(1)
+            sys.stdout.write(f"\rWaiting {DELAY - TIMER} seconds ")
+            sys.stdout.flush()
+        sys.stdout.write(f"\r{' ' * 36}")
+        sys.stdout.flush()
