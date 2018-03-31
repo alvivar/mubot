@@ -9,6 +9,7 @@
     Soundcloud playlist somehow?
 
     2018/03/31 01:41 pm
+    x Simple repeat cycle, every hour or something
     x Include bandcamp links
 
     2018/03/29 07:18 pm
