@@ -282,14 +282,13 @@ if __name__ == '__main__':
         # Qbot filling
 
         found = []
-        shuffle(songs)
         for i in songs:
             if i not in CONFIG['already_queued']:
                 CONFIG['already_queued'].append(i)
                 QBOT['messages'].append({'text': i})
                 found.append(i)
 
-        if songs > 0:
+        if len(songs) > 0:
             print('\nQbot queue...')
 
         # Save
@@ -337,7 +336,7 @@ if __name__ == '__main__':
                 time.sleep(2)
 
                 if result:
-                    print(f'{i} ({title})')
+                    print(f'{title} {i}')
 
             print('Done!')
 
