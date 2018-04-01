@@ -9,6 +9,7 @@ from random import shuffle
 import requests
 from bs4 import BeautifulSoup
 
+import pytumblr
 import selenium.webdriver.support.ui as ui
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -174,6 +175,26 @@ def get_songs_urls(songs_replies):
     return songs, threads
 
 
+def url_to_title(url):
+
+    replace = {
+        'https://': ' ',
+        'soundcloud.com/': ' ',
+        'bandcamp.com': ' ',
+        '.': ' ',
+        '-': ' ',
+        '_': ' ',
+        '/': ' - '
+    }
+
+    title = url
+    for i, j in replace.items():
+        title = title.replace(i, j)
+
+    title = ' '.join(title.split())
+    return title
+
+
 if __name__ == '__main__':
 
     # Files
@@ -183,7 +204,16 @@ if __name__ == '__main__':
         with open(CONFIG_JSON, 'r') as f:
             CONFIG = json.load(f)
     except (IOError, ValueError):
-        CONFIG = {'wait': 60 * 60, 'already_queued': []}
+        CONFIG = {
+            'wait': 60 * 60,
+            'tumblr_tokens': {
+                "consumer_key": "Go",
+                "consumer_secret": "find them",
+                "oauth_token": "at",
+                "oauth_secret": "https://tumblr.com/settings/apps"
+            },
+            'already_queued': []
+        }
         with open(CONFIG_JSON, 'w') as f:
             json.dump(CONFIG, f)
 
@@ -267,15 +297,47 @@ if __name__ == '__main__':
         with open(os.path.join(HOME, QBOT_JSON), 'w') as f:
             json.dump(QBOT, f)
 
+        # Tumblr queueing
+
+        try:
+            print('\nQueueing in Tumblr...')
+
+            tumblrapi = pytumblr.TumblrRestClient(
+                CONFIG['tumblr_tokens']['consumer_key'],
+                CONFIG['tumblr_tokens']['consumer_secret'],
+                CONFIG['tumblr_tokens']['oauth_token'],
+                CONFIG['tumblr_tokens']['oauth_secret'],
+            )
+
+            for i in found:
+                title = url_to_title(i)
+
+                tags = ['4chanmusic', '4chan', 'music', 'mu']
+                tags += re.split('[^0-9a-zA-Z]', title)
+
+                result = tumblrapi.create_audio(
+                    '4chanmusic',
+                    state='queue',
+                    caption=title,
+                    external_url=i,
+                    tags=tags)
+
+                time.sleep(2)
+
+                if result:
+                    print(f'{title} | {i}')
+
+            print('Done!')
+
+        except Exception as e:
+            print(e)
+
         # Info
 
         print()
-        print('\n'.join(threads))
+        print('\n'.join(threads) if threads else '')
         print(f'{len(threads)} threads scanned')
-
-        print()
-        print('\n'.join(found))
-        print(f'{len(found)} songs urls found')
+        print(f'{len(found)} songs found')
 
         print(f'\nDone! ({round(time.time() - DELTA)}s)')
 

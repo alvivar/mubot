@@ -5,12 +5,12 @@
     Scrap soundcloud/bandcamp for social accounts
     User database
 
-    Tumblr account publishing
     Soundcloud playlist somehow?
     Scrap latest song from soundcloud profile?
     Include youtube links?
 
     2018/03/31 01:41 pm
+    x Tumblr support: 4chanmusic
     x Refreshing time marks every cycle
     x Dynamic datapath
     x Wait time in config
