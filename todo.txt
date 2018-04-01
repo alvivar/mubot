@@ -1,14 +1,18 @@
 
         TO DO
 
+    User database
     Scrap soundcloud/bandcamp for social accounts
-    Scrap latest song from soundcloud profile
 
     Tumblr account publishing
-    Include youtube links?
     Soundcloud playlist somehow?
+    Scrap latest song from soundcloud profile?
+    Include youtube links?
 
     2018/03/31 01:41 pm
+    x Refreshing time marks every cycle
+    x Dynamic datapath
+    x Wait time in config
     x Simple repeat cycle, every hour or something
     x Include bandcamp links
 
