@@ -187,7 +187,7 @@ def url_to_title(url):
         '/': ' - '
     }
 
-    title = url
+    title = url[:-1] if url[-1] == '/' else url
     for i, j in replace.items():
         title = title.replace(i, j)
 
@@ -289,7 +289,7 @@ if __name__ == '__main__':
                 found.append(i)
 
         if len(songs) > 0:
-            print('\nQbot queue...')
+            print('\nQbot queue done!')
 
         # Save
 
