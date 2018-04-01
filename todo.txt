@@ -1,8 +1,9 @@
 
         TO DO
 
-    User database
+    Ignore sticky
     Scrap soundcloud/bandcamp for social accounts
+    User database
 
     Tumblr account publishing
     Soundcloud playlist somehow?
