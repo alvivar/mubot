@@ -1,9 +1,11 @@
 
         TO DO
 
+    Soundcloud account with hourly playlists of 30 songs / certain minutes
     Scrap soundcloud profile
     Scrap bandcamp profile
     Genres as tags
+    Improve tumblr post title with new data
 
     Ignore sticky
     User database
