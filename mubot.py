@@ -289,6 +289,9 @@ if __name__ == '__main__':
                 QBOT['messages'].append({'text': i})
                 found.append(i)
 
+        if songs > 0:
+            print('\nQbot queue...')
+
         # Save
 
         with open(os.path.join(HOME, CONFIG_JSON), 'w') as f:
@@ -300,7 +303,7 @@ if __name__ == '__main__':
         # Tumblr queueing
 
         try:
-            print('\nQueueing in Tumblr...')
+            print('\nTumblr queue...')
 
             tumblrapi = pytumblr.TumblrRestClient(
                 CONFIG['tumblr_tokens']['consumer_key'],
@@ -312,7 +315,16 @@ if __name__ == '__main__':
             for i in found:
                 title = url_to_title(i)
 
-                tags = ['4chanmusic', '4chan', 'music', 'mu']
+                url = i.lower()
+                soundcloud = ['soundcloud'] if 'soundcloud' in url else []
+                bandcamp = ['bandcamp'] if 'bandcamp' in url else []
+
+                sites = soundcloud + bandcamp
+                shuffle(sites)
+
+                tags = ['4chanmusic']
+                tags += sites
+                tags += ['mu', 'music', '4chan']
                 tags += re.split('[^0-9a-zA-Z]', title)
 
                 result = tumblrapi.create_audio(
@@ -325,7 +337,7 @@ if __name__ == '__main__':
                 time.sleep(2)
 
                 if result:
-                    print(f'{title} | {i}')
+                    print(f'{i} ({title})')
 
             print('Done!')
 
