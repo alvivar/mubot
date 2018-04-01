@@ -21,20 +21,22 @@ COW = r"""
 +  ||----||
    ~~    ~~  mubot v0.1 """
 
-DELTA = time.time()
-TIMESTR = round(DELTA)
-
 HOME = os.path.normpath(  # The script directory + cxfreeze compatibility
     os.path.dirname(
         sys.executable if getattr(sys, 'frozen', False) else __file__))
 
-TODAY = datetime.datetime.today()
-TODAYSTR = f'{TODAY.year}{TODAY.month:02}{TODAY.day:02}'
-DATAPATH = os.path.join(HOME, 'data', TODAYSTR)
-if not os.path.exists(DATAPATH):
-    os.makedirs(DATAPATH)
-
 CHROMEDRIVER = os.path.join(HOME, 'chromedriver.exe')
+
+
+def get_datapath():
+
+    today = datetime.datetime.today()
+    todaystr = f'{today.year}{today.month:02}{today.day:02}'
+    datapath = os.path.join(HOME, 'data', todaystr)
+    if not os.path.exists(datapath):
+        os.makedirs(datapath)
+
+    return datapath
 
 
 def get_html(url):
@@ -45,6 +47,7 @@ def get_html(url):
     html = driver.page_source
     driver.quit()
 
+    print(url)
     return html
 
 
@@ -180,7 +183,7 @@ if __name__ == '__main__':
         with open(CONFIG_JSON, 'r') as f:
             CONFIG = json.load(f)
     except (IOError, ValueError):
-        CONFIG = {'already_queued': []}
+        CONFIG = {'wait': 60 * 60, 'already_queued': []}
         with open(CONFIG_JSON, 'w') as f:
             json.dump(CONFIG, f)
 
@@ -221,22 +224,29 @@ if __name__ == '__main__':
     while REPEAT:
 
         print(COW)
+        DELTA = time.time()
+        TIMESTR = round(DELTA)
 
         # Replies
 
         songs_replies = get_songs_replies('http://boards.4chan.org/mu/catalog')
 
-        with open(os.path.join(DATAPATH, f'{TIMESTR}.replies.json'), 'w') as f:
+        with open(
+                os.path.join(get_datapath(), f'{TIMESTR}.replies.json'),
+                'w') as f:
             json.dump(songs_replies, f)
 
         # Songs (soundcloud + bandcamp)
 
         songs, threads = get_songs_urls(songs_replies)
 
-        with open(os.path.join(DATAPATH, f'{TIMESTR}.songs.json'), 'w') as f:
+        with open(os.path.join(get_datapath(), f'{TIMESTR}.songs.json'),
+                  'w') as f:
             json.dump(songs, f)
 
-        with open(os.path.join(DATAPATH, f'{TIMESTR}.threads.json'), 'w') as f:
+        with open(
+                os.path.join(get_datapath(), f'{TIMESTR}.threads.json'),
+                'w') as f:
             json.dump(threads, f)
 
         # Qbot filling
@@ -267,17 +277,17 @@ if __name__ == '__main__':
         print('\n'.join(found))
         print(f'{len(found)} songs urls found')
 
-        print(f'\nDone ({round(time.time() - DELTA)}s)')
+        print(f'\nDone! ({round(time.time() - DELTA)}s)')
 
-        # REPEAT
+        # Repeat
 
         print()
         TIMER = 0
-        DELAY = 60 * 60
+        DELAY = int(CONFIG['wait'])
         while REPEAT and TIMER < DELAY:
             TIMER += 1
             time.sleep(1)
-            sys.stdout.write(f"\rWaiting {DELAY - TIMER} seconds ")
+            sys.stdout.write(f"\rWaiting {DELAY - TIMER}s...")
             sys.stdout.flush()
-        sys.stdout.write(f"\r{' ' * 36}")
+        sys.stdout.write(f"\rMUUUU!{' ' * 36}")
         sys.stdout.flush()
