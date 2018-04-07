@@ -22,11 +22,12 @@ COW = r"""
 +  ||----||
    ~~    ~~  mubot v0.1 """
 
-HOME = os.path.normpath(  # The script directory + cxfreeze compatibility
+HOME = os.path.normpath(
     os.path.dirname(
-        sys.executable if getattr(sys, 'frozen', False) else __file__))
+        sys.executable
+        if getattr(sys, 'frozen', False) else __file__))  # cxfreeze
 
-CHROMEDRIVER = os.path.join(HOME, 'chromedriver.exe')
+DRIVER = os.path.join(HOME, 'chromedriver.exe')
 
 
 def get_datapath():
@@ -42,7 +43,7 @@ def get_datapath():
 
 def get_html(url):
 
-    driver = webdriver.Chrome(CHROMEDRIVER)
+    driver = webdriver.Chrome(DRIVER)
     driver.maximize_window()
     driver.get(url)
     html = driver.page_source
@@ -175,26 +176,6 @@ def get_songs_urls(songs_replies):
     return songs, threads
 
 
-def url_to_title(url):
-
-    replace = {
-        'https://': ' ',
-        'soundcloud.com/': ' ',
-        'bandcamp.com': ' ',
-        '.': ' ',
-        '-': ' ',
-        '_': ' ',
-        '/': ' - '
-    }
-
-    title = url[:-1] if url[-1] == '/' else url
-    for i, j in replace.items():
-        title = title.replace(i, j)
-
-    title = ' '.join(title.split())
-    return title
-
-
 if __name__ == '__main__':
 
     # Files
@@ -207,8 +188,8 @@ if __name__ == '__main__':
         CONFIG = {
             'wait': 60 * 60,
             'tumblr_tokens': {
-                "consumer_key": "Go",
-                "consumer_secret": "find them",
+                "consumer_key": "Find",
+                "consumer_secret": "them",
                 "oauth_token": "at",
                 "oauth_secret": "https://tumblr.com/settings/apps"
             },
@@ -311,32 +292,35 @@ if __name__ == '__main__':
                 CONFIG['tumblr_tokens']['oauth_secret'],
             )
 
-            for i in found:
-                title = url_to_title(i)
-
-                url = i.lower()
+            for url in found:
+                url = url.lower()
                 soundcloud = ['soundcloud'] if 'soundcloud' in url else []
                 bandcamp = ['bandcamp'] if 'bandcamp' in url else []
 
                 sites = soundcloud + bandcamp
                 shuffle(sites)
 
-                tags = ['4chanmusic']
-                tags += sites
-                tags += ['mu', 'music', '4chan']
-                tags += re.split('[^0-9a-zA-Z]', title)
+                keywords = re.split('[^0-9a-zA-Z]', url)
+                keywords = [
+                    i for i in keywords
+                    if i not in ['soundcloud', 'bandcamp', 'com', 'https']
+                ]
+
+                tags = sites
+                tags += keywords
+                tags += ['4chan', 'mu', 'music']
 
                 result = tumblrapi.create_audio(
                     '4chanmusic',
                     state='queue',
-                    caption=title,
-                    external_url=i,
+                    caption=url,
+                    external_url=url,
                     tags=tags)
 
                 time.sleep(2)
 
                 if result:
-                    print(f'{title} {i}')
+                    print(f"{''.join(keywords)} {url}")
 
             print('Done!')
 
