@@ -302,8 +302,8 @@ if __name__ == '__main__':
 
                 keywords = re.split('[^0-9a-zA-Z]', url)
                 keywords = [
-                    i for i in keywords
-                    if i not in ['soundcloud', 'bandcamp', 'com', 'https']
+                    i for i in keywords if i
+                    and i not in ['soundcloud', 'bandcamp', 'com', 'https']
                 ]
 
                 tags = sites
@@ -320,7 +320,7 @@ if __name__ == '__main__':
                 time.sleep(2)
 
                 if result:
-                    print(f"{''.join(keywords)} {url}")
+                    print(f"{' '.join(keywords)} {url}")
 
             print('Done!')
 
