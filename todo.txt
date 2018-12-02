@@ -1,6 +1,9 @@
 
         TO DO
 
+
+    Validate url before posting (?)
+    Bug getting the name http machinepng album fall catalog http://machinepng.bandcamp.com/album/fall-catalog
     Soundcloud account with hourly playlists of 30 songs / certain minutes
     Scrap soundcloud profile
     Scrap bandcamp profile
@@ -13,6 +16,7 @@
     Soundcloud playlist somehow?
     Scrap latest song from soundcloud profile?
     Include youtube links?
+
 
     2018/04/01 04:34 am
     x Logs +1
