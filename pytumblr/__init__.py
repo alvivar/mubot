@@ -121,6 +121,7 @@ class TumblrRestClient(object):
         :param tag: a string, the tag you are looking for on posts
         :param limit: an int, the number of results you want
         :param offset: an int, the offset of the posts you want to start at.
+        :param before: an int, the timestamp for posts you want before.
         :param filter: the post format you want returned: HTML, text or raw.
         :param type: the type of posts you want returned, e.g. video. If omitted returns all post types.
 
@@ -130,7 +131,7 @@ class TumblrRestClient(object):
             url = '/v2/blog/{0}/posts'.format(blogname)
         else:
             url = '/v2/blog/{0}/posts/{1}'.format(blogname, type)
-        return self.send_api_request("get", url, kwargs, ['id', 'tag', 'limit', 'offset', 'reblog_info', 'notes_info', 'filter', 'api_key'], True)
+        return self.send_api_request("get", url, kwargs, ['id', 'tag', 'limit', 'offset', 'before', 'reblog_info', 'notes_info', 'filter', 'api_key'], True)
 
     @validate_blogname
     def blog_info(self, blogname):
@@ -496,7 +497,7 @@ class TumblrRestClient(object):
         if post_type == 'text':
             valid += ['title', 'body']
         elif post_type == 'photo':
-            valid += ['caption', 'link', 'source', 'data']
+            valid += ['caption', 'link', 'source', 'data', 'photoset_layout']
         elif post_type == 'quote':
             valid += ['quote', 'source']
         elif post_type == 'link':
@@ -524,7 +525,7 @@ class TumblrRestClient(object):
         url = "/v2/blog/{0}/post".format(blogname)
         valid_options = self._post_valid_options(params.get('type', None))
 
-        if 'tags' in params:
+        if len(params.get("tags", [])) > 0:
             # Take a list of tags and make them acceptable for upload
             params['tags'] = ",".join(params['tags'])
 
