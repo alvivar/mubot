@@ -22,11 +22,8 @@ COW = r"""
 +  ||----||
    ~~    ~~  mubot v0.1 """
 
-HOME = os.path.normpath(
-    os.path.dirname(
-        sys.executable
-        if getattr(sys, 'frozen', False) else __file__))  # cxfreeze
-
+DIR = sys.executable if getattr(sys, 'frozen', False) else __file__
+HOME = os.path.normpath(os.path.dirname(DIR))
 DRIVER = os.path.join(HOME, 'chromedriver.exe')
 
 
@@ -302,8 +299,8 @@ if __name__ == '__main__':
 
                 keywords = re.split('[^0-9a-zA-Z]', url)
                 keywords = [
-                    i for i in keywords if i
-                    and i not in ['soundcloud', 'bandcamp', 'com', 'https']
+                    i for i in keywords if i and i not in
+                    ['soundcloud', 'bandcamp', 'com', 'https', 'http']
                 ]
 
                 tags = sites
